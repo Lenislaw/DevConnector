@@ -1,9 +1,15 @@
 const express = require("express");
 const router = express.Router();
+// Universal avatar
 const gravatar = require("gravatar");
+// Hash password
 const bcrypt = require("bcryptjs");
 // Validation
 const { check, validationResult } = require("express-validator");
+// JESON WEB TOKEN
+const jwt = require("jsonwebtoken");
+//Config
+const config = require("config");
 
 // Get User model
 const User = require("../../models/User");
@@ -63,9 +69,23 @@ router.post(
       //Zapisanie w bazei danych
       await user.save();
 
-      // Return jsonwebtoken
+      // Return JWT
+      const payload = {
+        user: {
+          id: user.id,
+          name: user.name,
+        },
+      };
 
-      res.send("User registred");
+      jwt.sign(
+        payload,
+        config.get("jwtSecret"),
+        { expiresIn: 360000 },
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
     } catch (err) {
       console.error(err.message);
       res.status(500).send("Server error");

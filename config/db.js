@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const config = require("config");
+
 const db = config.get("mongoURI");
 
 // connect with DB return promise
@@ -9,6 +10,7 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
+      useFindAndModify: false,
     });
 
     console.log("MongoDB Connected...");
